@@ -499,3 +499,84 @@ VALUES (1,74),(1,75),(1,76),(2,10),(2,11),(3,100),(3,101),(4,66),(4,67),(5,141),
 (399,83),(399,84),(400,118),(400,119),(400,120),(401,103),(401,104),(401,105),(402,51),(403,75),
 (404,34),(404,35),(405,109),(405,110),(405,111),(406,72),(407,93),(407,94),(408,49),(409,88),
 (410,117),(410,118),(410,119);
+
+
+
+
+SELECT count(customer_id) FROM bookings
+WHERE customer_id = 10;
+
+SELECT count(s.id) FROM screenings as s
+JOIN films as f ON s.film_id = f.id
+WHERE f.name = 'Blade Runner 2049'
+AND s.start_time BETWEEN '2022-10-01'  AND '2022-10-31 23:59:59';
+
+SELECT count(DISTINCT b.customer_id) FROM bookings as b
+JOIN screenings AS s on b.screening_id = s.id
+WHERE s.start_time BETWEEN '2023-04-01'  AND '2023-04-30 23:59:59';
+
+SELECT name, length_min FROM films
+Where length_min > (SELECT avg(length_min) FROM films);
+
+SELECT max(num_screenings), min(num_screenings) FROM
+(SELECT film_id, count(*) AS num_screenings FROM screenings
+GROUP BY film_id) random_name;
+
+SELECT film_id, count(*) AS num_screenings FROM screenings
+GROUP BY film_id;
+
+SELECT name, 
+(SELECT count(*) FROM screenings
+WHERE film_id = films.id)
+FROM films;
+
+
+SELECT concat(name," : ", length_min, " mins") AS Film_details FROM films;
+
+SELECT substring(email, 5) as fifth_Char_email FROM customers;
+
+SELECT lower(first_name) as F_name, upper(last_name) as L_name FROM customers
+WHERE last_name = "Smith"; 
+
+SELECT substring(name, -3) as last_three FROM films;
+
+SELECT concat(substring(first_name,1,3), " ", substring(last_name,1,3)) AS fancy_name 
+FROM customers;
+
+SELECT film_id, start_time FROM screenings
+WHERE date(start_time) = "2022-06-18";
+
+SELECT * FROM screenings
+WHERE date(start_time) BETWEEN '2023-03-06' AND '2023-03-13 23:59:59';
+
+SELECT * FROM screenings
+WHERE month(start_time) = "10" AND year(start_time) = "2022";
+
+SELECT * from films
+WHERE length_min > 120;
+
+
+SELECT name from films;
+
+-- gettings list of film names and how often they are repeated
+SELECT f.name, count(s.film_id) as showings from screenings s
+JOIN films as f ON f.id = s.film_id
+GROUP BY film_id
+HAVING showings = (SELECT max(sh.showings) FROM 
+(SELECT count(s.film_id) AS showings from screenings s
+GROUP BY film_id) AS sh);
+
+SELECT max(sh.showings) FROM 
+(SELECT count(s.film_id) AS showings from screenings
+GROUP BY film_id) AS sh;
+
+
+SELECT f.name, count(s.film_id) AS showings FROM screenings s
+JOIN films f ON f.id = s.film_id
+GROUP BY film_id
+HAVING showings = (
+SELECT max(sh.showings) FROM
+(SELECT count(s.film_id) AS showings FROM screenings s
+GROUP BY film_id) AS sh
+);
+
